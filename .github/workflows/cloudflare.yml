@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Check secrets
         id: check
@@ -32,6 +31,11 @@ jobs:
         run: npm ci
       - if: steps.check.outputs.ok == 'true'
         run: npm test && npm run build
+      - name: Find Cloudflare account
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          ACC=$(curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const j=JSON.parse(s);if(!j.success){console.error(JSON.stringify(j.errors));process.exit(1)}process.stdout.write(j.result[0].id)})")
+          echo "CLOUDFLARE_ACCOUNT_ID=$ACC" >> $GITHUB_ENV
       - name: Create D1 database if needed
         if: steps.check.outputs.ok == 'true'
         run: |
