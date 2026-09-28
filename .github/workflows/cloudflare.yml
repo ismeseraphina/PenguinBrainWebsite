@@ -41,6 +41,20 @@ jobs:
             ID=$(npx wrangler d1 list --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const l=JSON.parse(s);process.stdout.write(l.find(x=>x.name==='penguinbrain').uuid)})")
           fi
           sed -i "s/__D1_ID__/$ID/" wrangler.jsonc
+      - name: Make sure a workers.dev subdomain exists
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          API="https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain"
+          SUB=$(curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$API" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(JSON.parse(s).result?.subdomain||'')}catch{}})")
+          if [ -z "$SUB" ]; then
+            for NAME in penguinbrain-seraphina seraphina-penguinbrain penguinbrain-$RANDOM; do
+              OK=$(curl -s -X PUT -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" -d "{\"subdomain\":\"$NAME\"}" "$API" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(String(JSON.parse(s).success))}catch{}})")
+              if [ "$OK" = "true" ]; then SUB=$NAME; break; fi
+            done
+          fi
+          echo "SUBDOMAIN=$SUB" >> $GITHUB_ENV
       - name: Deploy worker
         if: steps.check.outputs.ok == 'true'
-        run: npx wrangler deploy
+        run: |
+          npx wrangler deploy
+          echo "## Website: https://penguinbrain.$SUBDOMAIN.workers.dev" >> $GITHUB_STEP_SUMMARY
