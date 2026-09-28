@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { actions, getState, isPersistent, setState, useStore } from '../store';
-import { SyncError, exportBackup, parseData, syncNow, verifyAccount } from '../sync';
-import { Confirm, Icon, Segmented, Switch, TopBar, navigate, toast } from '../ui';
+import { exportBackup, parseData } from '../sync';
+import { Confirm, Icon, Segmented, TopBar, navigate, toast } from '../ui';
 import { downloadFile, relative } from '../util';
 
 export const LINKS = {
@@ -17,7 +17,7 @@ export const LINKS = {
   createToken: 'https://github.com/settings/personal-access-tokens/new?name=Penguin+Brain+Sync&description=Sync+Penguin+Brain+app+and+website&contents=write',
 };
 
-function Row({ icon, title, subtitle, onClick, href, right }: { icon: string; title: string; subtitle?: string; onClick?: () => void; href?: string; right?: ReactNode }) {
+export function Row({ icon, title, subtitle, onClick, href, right }: { icon: string; title: string; subtitle?: string; onClick?: () => void; href?: string; right?: ReactNode }) {
   const inner = (
     <>
       <span className="row-icon"><Icon name={icon} size={20} /></span>
@@ -94,6 +94,7 @@ export function SettingsPage() {
           subtitle={settings.sync.login ? `Signed in as ${settings.sync.login}${settings.sync.lastSync ? ` · synced ${relative(settings.sync.lastSync)}` : ''}` : 'Sync with the Penguin Brain Android app'}
           onClick={() => navigate('/settings/sync')}
         />
+        {settings.sync.isAdmin && <Row icon="lock" title="Admin" subtitle="Users, sign ups and server data" onClick={() => navigate('/admin')} />}
       </div>
 
       <h2 className="section-title">Appearance</h2>
@@ -168,120 +169,6 @@ export function SettingsPage() {
           toast('Local data cleared');
         }}
       />
-    </div>
-  );
-}
-
-export function SyncPage() {
-  const sync = useStore((s) => s.settings.sync);
-  const [token, setToken] = useState('');
-  const [owner, setOwner] = useState(sync.owner || 'ismeseraphina');
-  const [repo, setRepo] = useState(sync.repo || 'PenguinBrainData');
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<{ text: string; err?: boolean } | null>(null);
-
-  const signIn = async () => {
-    setBusy(true);
-    setMsg(null);
-    try {
-      const { login, isPrivate } = await verifyAccount(token.trim(), owner.trim(), repo.trim());
-      actions.updateSync({ token: token.trim(), owner: owner.trim(), repo: repo.trim(), login, lastError: '', lastSync: 0 });
-      setState((s) => ({ ...s, syncBase: { account: '', ids: {} } }), false);
-      const r = await syncNow();
-      setMsg({ text: `Signed in as ${login}. ${r.pulled} changes downloaded, ${r.pushed} uploaded.${isPrivate ? '' : ' Warning: this repository is public, make it private to keep your data safe.'}`, err: !isPrivate });
-      setToken('');
-    } catch (e) {
-      setMsg({ text: e instanceof SyncError ? e.message : 'Sign in failed', err: true });
-    } finally {
-      setBusy(false);
-    }
-  };
-  const doSync = async () => {
-    setBusy(true);
-    setMsg(null);
-    try {
-      const r = await syncNow();
-      setMsg({ text: `Synced. ${r.pulled} changes downloaded, ${r.pushed} uploaded.` });
-    } catch (e) {
-      setMsg({ text: e instanceof Error ? e.message : 'Sync failed', err: true });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="page narrow">
-      <TopBar title="Sign in & Sync" onBack={() => navigate('/settings')} />
-      <div className="card pad sync-hero">
-        <img src="img/penguin_app_icon.webp" alt="" width={72} height={72} />
-        <div>
-          <h2>One brain, two places</h2>
-          <p className="muted">Notes, folders, tasks, diary and bookmarks sync between this website and the Penguin Brain Android app. Everything is saved as one JSON file in a private GitHub repository you own. No other server sees your data.</p>
-        </div>
-      </div>
-
-      {!sync.login ? (
-        <>
-          <ol className="steps">
-            <li>
-              <strong>Create a private repository</strong> called <code>PenguinBrainData</code>.{' '}
-              <a href={LINKS.createRepo} target="_blank" rel="noopener noreferrer">Create repository</a>
-            </li>
-            <li>
-              <strong>Create a fine-grained token</strong>: Repository access → Only select repositories → <code>PenguinBrainData</code>, Permissions → Contents: <em>Read and write</em>.{' '}
-              <a href={LINKS.createToken} target="_blank" rel="noopener noreferrer">Create token</a>
-            </li>
-            <li>
-              <strong>Sign in here and in the app</strong> (Settings → Sign in &amp; Sync) with the same token and repository.
-            </li>
-          </ol>
-          <div className="card pad form">
-            <label className="field">
-              <span className="field-label">GitHub token</span>
-              <input className="input" type="password" autoComplete="off" value={token} placeholder="github_pat_…" onChange={(e) => setToken(e.target.value)} />
-            </label>
-            <div className="two">
-              <label className="field">
-                <span className="field-label">Repository owner</span>
-                <input className="input" value={owner} onChange={(e) => setOwner(e.target.value)} />
-              </label>
-              <label className="field">
-                <span className="field-label">Repository name</span>
-                <input className="input" value={repo} onChange={(e) => setRepo(e.target.value)} />
-              </label>
-            </div>
-            <button className="btn wide" disabled={busy || !token.trim() || !owner.trim() || !repo.trim()} onClick={signIn}>
-              {busy ? 'Signing in…' : 'Sign in'}
-            </button>
-            <p className="muted small">The token is stored only in this browser. Revoke it anytime on GitHub.</p>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="settings-group">
-            <Row icon="github" title={`Signed in as ${sync.login}`} subtitle={`Repository ${sync.owner}/${sync.repo}`} href={`https://github.com/${sync.owner}/${sync.repo}`} />
-            <Row icon="time" title="Last sync" subtitle={sync.lastSync ? new Date(sync.lastSync).toLocaleString() : 'Never'} right={<span />} />
-            <Row icon="refresh" title="Auto sync" subtitle="On open, after edits and every 5 minutes" right={<Switch label="Auto sync" checked={sync.auto} onChange={(v) => actions.updateSync({ auto: v })} />} />
-          </div>
-          {sync.lastError && !msg && <p className="error-text">Last sync failed: {sync.lastError}</p>}
-          <div className="button-row">
-            <button className="btn" disabled={busy} onClick={doSync}>{busy ? 'Syncing…' : 'Sync now'}</button>
-            <button
-              className="btn text danger"
-              disabled={busy}
-              onClick={() => {
-                actions.updateSync({ token: '', login: '', lastSync: 0, lastError: '' });
-                setState((s) => ({ ...s, syncBase: { account: '', ids: {} } }), false);
-                setMsg({ text: 'Signed out. Your data stays in this browser.' });
-              }}
-            >
-              Sign out
-            </button>
-          </div>
-        </>
-      )}
-      {msg && <p className={msg.err ? 'error-text' : 'ok-text'}>{msg.text}</p>}
-      <p className="muted small">Merging works per item: the newest edit wins and deletions sync too. The sync file uses the MyBrain JSON backup format, so you can also import it in the app from Settings → Export/Import.</p>
     </div>
   );
 }

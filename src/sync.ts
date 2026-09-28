@@ -163,11 +163,14 @@ async function gh(token: string, method: string, url: string, body?: unknown) {
 }
 
 const enc = encodeURIComponent;
-const repoUrl = (o: string, r: string) => `https://api.github.com/repos/${enc(o)}/${enc(r)}`;
+/** owner can be a Penguin Brain server URL (account sync) instead of a GitHub user */
+export const isServer = (o: string) => /^https?:\/\//i.test(o);
+const apiBase = (o: string) => (isServer(o) ? o.replace(/\/+$/, '') : 'https://api.github.com');
+const repoUrl = (o: string, r: string) => `${apiBase(o)}/repos/${isServer(o) ? 'me' : enc(o)}/${enc(r)}`;
 
 export async function verifyAccount(token: string, owner: string, repo: string) {
-  const u = await gh(token, 'GET', 'https://api.github.com/user');
-  if (u.status === 401) throw new SyncError('Invalid GitHub token');
+  const u = await gh(token, 'GET', `${apiBase(owner)}/user`);
+  if (u.status === 401) throw new SyncError(isServer(owner) ? 'Signed out, please sign in again' : 'Invalid GitHub token');
   if (u.status >= 300) throw new SyncError(`GitHub error ${u.status}`);
   const r = await gh(token, 'GET', repoUrl(owner, repo));
   if (r.status === 404 || r.status === 403) throw new SyncError(`Repository ${owner}/${repo} not found, or the token has no access to it`);

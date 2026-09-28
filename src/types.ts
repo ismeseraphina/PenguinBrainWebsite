@@ -85,6 +85,7 @@ export interface SyncSettings {
   auto: boolean;
   lastSync: number;
   lastError: string;
+  isAdmin?: boolean;
 }
 
 export interface Settings {

@@ -1,0 +1,46 @@
+name: Deploy to Cloudflare (website + backend)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check secrets
+        id: check
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "CLOUDFLARE_API_TOKEN secret is not set yet, skipping deploy." >> $GITHUB_STEP_SUMMARY
+            echo "ok=false" >> $GITHUB_OUTPUT
+          else
+            echo "ok=true" >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.ok == 'true'
+        with:
+          node-version: 22
+          cache: npm
+      - if: steps.check.outputs.ok == 'true'
+        run: npm ci
+      - if: steps.check.outputs.ok == 'true'
+        run: npm test && npm run build
+      - name: Create D1 database if needed
+        if: steps.check.outputs.ok == 'true'
+        run: |
+          ID=$(npx wrangler d1 list --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const l=JSON.parse(s);const d=l.find(x=>x.name==='penguinbrain');process.stdout.write(d?d.uuid:'')})")
+          if [ -z "$ID" ]; then
+            npx wrangler d1 create penguinbrain
+            ID=$(npx wrangler d1 list --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const l=JSON.parse(s);process.stdout.write(l.find(x=>x.name==='penguinbrain').uuid)})")
+          fi
+          sed -i "s/__D1_ID__/$ID/" wrangler.jsonc
+      - name: Deploy worker
+        if: steps.check.outputs.ok == 'true'
+        run: npx wrangler deploy

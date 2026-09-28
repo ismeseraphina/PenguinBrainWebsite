@@ -8,7 +8,8 @@ import { NoteDetailPage, NotesPage } from './pages/Notes';
 import { DiaryChartPage, DiaryDetailPage, DiaryPage } from './pages/Diary';
 import { BookmarksPage } from './pages/Bookmarks';
 import { CalendarPage } from './pages/Calendar';
-import { SettingsPage, SyncPage } from './pages/Settings';
+import { SettingsPage } from './pages/Settings';
+import { AdminPage, SyncPage } from './pages/Account';
 
 function Logo() {
   return (
@@ -114,6 +115,8 @@ function Page({ route }: { route: string[] }) {
       return <BookmarksPage />;
     case 'calendar':
       return <CalendarPage />;
+    case 'admin':
+      return <AdminPage />;
     case 'settings':
       return b === 'sync' ? <SyncPage /> : <SettingsPage />;
     default:
