@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "tsx test/sync.test.ts"
+    "test": "tsx test/sync.test.ts && tsx test/ai.test.ts"
   },
   "dependencies": {
     "dompurify": "^3.4.16",

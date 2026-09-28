@@ -88,7 +88,17 @@ export interface SyncSettings {
   isAdmin?: boolean;
 }
 
+export type AiProviderId = 'openai' | 'gemini' | 'anthropic' | 'openrouter' | 'lmstudio' | 'ollama';
+export interface AiSettings {
+  provider: AiProviderId | 'none';
+  keys: Partial<Record<AiProviderId, string>>;
+  models: Partial<Record<AiProviderId, string>>;
+  urls: Partial<Record<AiProviderId, string>>;
+  tools: boolean;
+}
+
 export interface Settings {
+  ai: AiSettings;
   theme: 'auto' | 'light' | 'dark';
   firstDayOfWeek: 0 | 1; // 0 sunday, 1 monday
   showCompletedTasks: boolean;

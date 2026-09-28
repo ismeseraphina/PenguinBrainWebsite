@@ -10,6 +10,7 @@ import { BookmarksPage } from './pages/Bookmarks';
 import { CalendarPage } from './pages/Calendar';
 import { SettingsPage } from './pages/Settings';
 import { AdminPage, SyncPage } from './pages/Account';
+import { AssistantPage } from './pages/Assistant';
 
 function Logo() {
   return (
@@ -36,6 +37,7 @@ const SUBNAV = [
   { path: 'diary', label: 'Diary', icon: 'happy' },
   { path: 'bookmarks', label: 'Bookmarks', icon: 'open_link' },
   { path: 'calendar', label: 'Calendar', icon: 'calendar' },
+  { path: 'assistant', label: 'Assistant', icon: 'send_message' },
 ];
 
 function useTheme() {
@@ -115,6 +117,8 @@ function Page({ route }: { route: string[] }) {
       return <BookmarksPage />;
     case 'calendar':
       return <CalendarPage />;
+    case 'assistant':
+      return <AssistantPage />;
     case 'admin':
       return <AdminPage />;
     case 'settings':

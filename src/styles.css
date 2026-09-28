@@ -1549,3 +1549,131 @@ button.settings-row:hover {
   padding: 0 8px;
   font-size: 0.82rem;
 }
+
+/* ---------- assistant ---------- */
+.assistant {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 16px);
+}
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+.chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 32px 8px;
+}
+.chat-empty img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+.chat-empty p {
+  max-width: 42ch;
+  margin: 0;
+}
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.chip-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+.chip-btn:hover {
+  background: var(--card-2);
+}
+.bubble {
+  max-width: 86%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  background: var(--card);
+  overflow-wrap: anywhere;
+}
+.bubble p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.bubble .markdown > :first-child {
+  margin-top: 0;
+}
+.bubble .markdown > :last-child {
+  margin-bottom: 0;
+}
+.bubble.user {
+  align-self: flex-end;
+  background: var(--primary-strong);
+  color: var(--on-primary);
+  border-bottom-right-radius: 6px;
+}
+.bubble.assistant {
+  align-self: flex-start;
+  border-bottom-left-radius: 6px;
+}
+.bubble.error {
+  color: var(--danger);
+}
+.tool-calls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.typing {
+  display: flex;
+  gap: 5px;
+  padding: 16px 18px;
+}
+.typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: blink 1.2s infinite ease-in-out;
+}
+.typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+.composer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 12px 0 16px;
+  background: var(--bg);
+}
+.composer textarea {
+  resize: none;
+  max-height: 160px;
+  border-radius: 22px;
+  padding: 11px 16px;
+}
+@media (max-width: 760px) {
+  .composer {
+    bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+  .bubble {
+    max-width: 92%;
+  }
+}

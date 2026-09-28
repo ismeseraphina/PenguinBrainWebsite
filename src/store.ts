@@ -12,6 +12,7 @@ export const defaultSettings: Settings = {
   showCompletedTasks: true,
   taskOrder: 'priority',
   noteView: 'grid',
+  ai: { provider: 'none', keys: {}, models: {}, urls: {}, tools: true },
   sync: { token: '', owner: '', repo: 'PenguinBrainData', login: '', auto: true, lastSync: 0, lastError: '' },
 };
 
