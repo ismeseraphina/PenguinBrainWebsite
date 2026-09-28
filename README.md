@@ -2,7 +2,17 @@
 
 The web version of **Penguin Brain**: tasks, notes (with folders), diary with mood chart, bookmarks and a calendar, in a pink penguin theme. It signs in with GitHub and syncs both ways with the [Penguin Brain Android app](https://github.com/ismeseraphina/PenguinBrain).
 
-**Open it:** https://ismeseraphina.github.io/PenguinBrainWebsite/
+**Open it:** Cloudflare version with accounts: `https://penguinbrain.<your-subdomain>.workers.dev` · static GitHub Pages version (GitHub sync only): https://ismeseraphina.github.io/PenguinBrainWebsite/
+
+## Backend (Cloudflare Worker + D1)
+
+`worker/index.ts` serves the website and a small API:
+
+- Email + password accounts (PBKDF2-SHA256 hashes, bearer tokens, login rate limit). The first account becomes admin; sign ups are closed afterwards unless the admin opens them.
+- Sync storage per user that speaks the same subset of the GitHub Contents API, so the Android app syncs with it by using the server URL as "Repository owner" and `data` as "Repository name".
+- Admin page at `#/admin`: users, roles, disable, reset password, sign out everywhere, download or delete data, open or close sign ups.
+
+Deploy: add the repository secrets `CLOUDFLARE_API_TOKEN` (template "Edit Cloudflare Workers" plus D1 Edit) and `CLOUDFLARE_ACCOUNT_ID`, then run the "Deploy to Cloudflare" workflow. It creates the D1 database on first run. Local: `npx wrangler dev`.
 
 ## Credits
 
