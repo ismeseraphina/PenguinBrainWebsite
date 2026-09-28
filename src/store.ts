@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { AppState, Bookmark, DiaryEntry, Note, NoteFolder, Settings, Task } from './types';
+import type { AppState, Bookmark, CalEvent, DiaryEntry, Note, NoteFolder, Settings, Task } from './types';
 import { now, uuid } from './util';
 
 const DB_NAME = 'penguinbrain';
@@ -22,6 +22,7 @@ const emptyState: AppState = {
   tasks: [],
   diary: [],
   bookmarks: [],
+  events: [],
   settings: defaultSettings,
   syncBase: { account: '', ids: {} },
 };
@@ -196,6 +197,13 @@ export const actions = {
   },
   deleteBookmark(id: string) {
     setState((s) => ({ ...s, bookmarks: s.bookmarks.filter((b) => b.id !== id) }));
+  },
+  // calendar events
+  upsertEvent(e: CalEvent) {
+    setState((s) => ({ ...s, events: upsert(s.events, e) }));
+  },
+  deleteEvent(id: string) {
+    setState((s) => ({ ...s, events: s.events.filter((x) => x.id !== id) }));
   },
   // settings
   updateSettings(patch: Partial<Settings>) {

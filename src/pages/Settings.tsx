@@ -76,6 +76,7 @@ export function SettingsPage() {
         tasks: upsertAll(s.tasks, data.tasks),
         diary: upsertAll(s.diary, data.diary),
         bookmarks: upsertAll(s.bookmarks, data.bookmarks),
+        events: upsertAll(s.events, data.events),
       }));
       toast(`Imported ${data.notes.length} notes, ${data.tasks.length} tasks, ${data.diary.length} diary entries, ${data.bookmarks.length} bookmarks`);
     } catch {
@@ -162,10 +163,10 @@ export function SettingsPage() {
         open={wipe}
         onClose={() => setWipe(false)}
         title="Clear local data?"
-        message="Notes, tasks, diary and bookmarks stored in this browser will be removed. Your GitHub sync file is not touched, and you stay signed in."
+        message="Notes, tasks, diary, bookmarks and calendar events stored in this browser will be removed. Your GitHub sync file is not touched, and you stay signed in."
         confirmLabel="Clear"
         onConfirm={() => {
-          setState((s) => ({ ...s, notes: [], noteFolders: [], tasks: [], diary: [], bookmarks: [], syncBase: { account: '', ids: {} } }), false);
+          setState((s) => ({ ...s, notes: [], noteFolders: [], tasks: [], diary: [], bookmarks: [], events: [], syncBase: { account: '', ids: {} } }), false);
           toast('Local data cleared');
         }}
       />

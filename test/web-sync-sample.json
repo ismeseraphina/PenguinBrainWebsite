@@ -1,50 +1,50 @@
 {
  "format": "penguinbrain-sync",
  "version": 1,
- "updatedAt": 1790622587263,
+ "updatedAt": 1790638049045,
  "updatedBy": "web",
  "notes": [
   {
    "title": "筆記",
    "content": "# hi",
-   "createdDate": 1790622587262,
-   "updatedDate": 1790622587262,
+   "createdDate": 1790638049044,
+   "updatedDate": 1790638049044,
    "pinned": true,
    "folderId": null,
-   "id": "f3902c67-6c08-419b-a4fc-711008098ad8"
+   "id": "df5681d6-3fb5-4b8c-a148-3a50ac8be4fd"
   }
  ],
  "noteFolders": [],
  "tasks": [
   {
-   "title": "edited on phone",
-   "description": "",
-   "isCompleted": false,
-   "priority": 0,
-   "createdDate": 1790622587255,
-   "updatedDate": 1790622587263,
-   "subTasks": [],
-   "dueDate": 1790626187255,
-   "recurring": false,
-   "frequency": 2,
-   "frequencyAmount": 1,
-   "alarmId": null,
-   "id": "a6ccc332-9d67-42f9-816e-e6f302e05fea"
-  },
-  {
    "title": "second",
    "description": "",
    "isCompleted": false,
    "priority": 0,
-   "createdDate": 1790622587261,
-   "updatedDate": 1790622587261,
+   "createdDate": 1790638049042,
+   "updatedDate": 1790638049042,
    "subTasks": [],
    "dueDate": 0,
    "recurring": false,
    "frequency": 2,
    "frequencyAmount": 1,
    "alarmId": null,
-   "id": "c23a2877-7599-43dd-a07c-13f712e0a736"
+   "id": "07a8fe10-aef3-4917-a4c1-f5a424235604"
+  },
+  {
+   "title": "edited on phone",
+   "description": "",
+   "isCompleted": false,
+   "priority": 0,
+   "createdDate": 1790638049036,
+   "updatedDate": 1790638049045,
+   "subTasks": [],
+   "dueDate": 1790641649036,
+   "recurring": false,
+   "frequency": 2,
+   "frequencyAmount": 1,
+   "alarmId": null,
+   "id": "3097e0fa-ef27-4cd0-a61f-73a43bcb250d"
   },
   {
    "title": "legacy edited",
@@ -52,7 +52,7 @@
    "isCompleted": false,
    "priority": 0,
    "createdDate": 0,
-   "updatedDate": 1790622587362,
+   "updatedDate": 1790638049144,
    "subTasks": [
     {
      "title": "sub",
@@ -77,8 +77,8 @@
   {
    "title": "web diary",
    "content": "x",
-   "createdDate": 1790622587262,
-   "updatedDate": 1790622587262,
+   "createdDate": 1790638049044,
+   "updatedDate": 1790638049044,
    "mood": "AWESOME",
    "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
   }
@@ -93,16 +93,44 @@
    "id": "b1"
   }
  ],
+ "events": [
+  {
+   "title": "Holiday moved",
+   "description": "",
+   "location": "",
+   "start": 1790899200000,
+   "end": 1790985600000,
+   "allDay": true,
+   "rrule": "",
+   "reminders": [],
+   "updatedDate": 1790638049345,
+   "id": "0f4a2b6c-8d1e-4f3a-b5c7-9e2d4a6b8c10"
+  },
+  {
+   "title": "Lecture 上堂",
+   "description": "CS2311",
+   "location": "LT-5",
+   "start": 1791162000000,
+   "end": 1791165600000,
+   "allDay": false,
+   "rrule": "FREQ=WEEKLY;BYDAY=MO",
+   "reminders": [
+    10
+   ],
+   "updatedDate": 1790638049244,
+   "id": "9c1d6a3e-5b7f-4e2a-9d31-2f6c8b0e7a11"
+  }
+ ],
  "deleted": [
   {
    "type": "diary",
    "id": "d-app",
-   "at": 1790622587259
+   "at": 1790638049041
   },
   {
    "type": "notes",
-   "id": "7ae36c45-b4ef-4e71-9d22-8d25ded5e84f",
-   "at": 1790622587270
+   "id": "13cb00fd-98f6-4901-b180-95b4895c3aed",
+   "at": 1790638049051
   }
  ]
 }

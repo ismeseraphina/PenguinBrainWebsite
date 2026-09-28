@@ -11,6 +11,7 @@ import { CalendarPage } from './pages/Calendar';
 import { SettingsPage } from './pages/Settings';
 import { AdminPage, SyncPage } from './pages/Account';
 import { AssistantPage } from './pages/Assistant';
+import { startReminders } from './events';
 
 function Logo() {
   return (
@@ -57,6 +58,9 @@ function useTheme() {
 
 /** Auto sync: on open, on focus, 4s after edits, and every 5 minutes. */
 function useAutoSync(ready: boolean) {
+  useEffect(() => {
+    if (ready) startReminders();
+  }, [ready]);
   useEffect(() => {
     if (!ready) return;
     const can = () => {

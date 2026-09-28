@@ -1677,3 +1677,66 @@ button.settings-row:hover {
     max-width: 92%;
   }
 }
+
+/* ---------- calendar events ---------- */
+.cal-cell {
+  aspect-ratio: auto;
+  min-height: 64px;
+  justify-content: flex-start;
+  padding: 6px 2px;
+  overflow: hidden;
+}
+.cal-ev {
+  display: block;
+  width: 100%;
+  font-size: 0.68rem;
+  line-height: 1.25;
+  padding: 1px 4px;
+  border-radius: 5px;
+  background: var(--primary-strong);
+  color: var(--on-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+.cal-ev.more {
+  background: transparent;
+  color: var(--text-muted);
+  padding: 0 4px;
+}
+.event-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--card);
+}
+.event-row:hover {
+  background: var(--card-2);
+}
+.event-row h3 {
+  margin: 0 0 2px;
+  font-size: 1rem;
+}
+.event-row p {
+  margin: 0;
+}
+.event-bar {
+  width: 4px;
+  border-radius: 4px;
+  background: var(--primary-strong);
+  flex: none;
+}
+@media (max-width: 760px) {
+  .cal-cell {
+    min-height: 54px;
+  }
+  .cal-ev {
+    font-size: 0.6rem;
+    padding: 0 2px;
+  }
+}

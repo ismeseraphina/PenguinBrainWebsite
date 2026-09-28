@@ -58,6 +58,21 @@ export interface Bookmark {
   id: string;
 }
 
+// Calendar event synced with the "Penguin Brain" calendar in the Android app.
+// start/end are epoch milliseconds (UTC instants). All-day events use UTC midnight like Android.
+export interface CalEvent {
+  title: string;
+  description: string;
+  location: string;
+  start: number;
+  end: number;
+  allDay: boolean;
+  rrule: string; // RFC 5545 RRULE without the "RRULE:" prefix, empty = no repeat
+  reminders: number[]; // minutes before start
+  updatedDate: number;
+  id: string;
+}
+
 export interface Tombstone {
   type: string;
   id: string;
@@ -74,6 +89,7 @@ export interface SyncFile {
   tasks: Task[];
   diary: DiaryEntry[];
   bookmarks: Bookmark[];
+  events: CalEvent[];
   deleted: Tombstone[];
 }
 
@@ -118,6 +134,7 @@ export interface AppData {
   tasks: Task[];
   diary: DiaryEntry[];
   bookmarks: Bookmark[];
+  events: CalEvent[];
 }
 
 export interface AppState extends AppData {
