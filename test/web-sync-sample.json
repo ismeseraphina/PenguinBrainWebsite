@@ -1,0 +1,108 @@
+{
+ "format": "penguinbrain-sync",
+ "version": 1,
+ "updatedAt": 1790622587263,
+ "updatedBy": "web",
+ "notes": [
+  {
+   "title": "筆記",
+   "content": "# hi",
+   "createdDate": 1790622587262,
+   "updatedDate": 1790622587262,
+   "pinned": true,
+   "folderId": null,
+   "id": "f3902c67-6c08-419b-a4fc-711008098ad8"
+  }
+ ],
+ "noteFolders": [],
+ "tasks": [
+  {
+   "title": "edited on phone",
+   "description": "",
+   "isCompleted": false,
+   "priority": 0,
+   "createdDate": 1790622587255,
+   "updatedDate": 1790622587263,
+   "subTasks": [],
+   "dueDate": 1790626187255,
+   "recurring": false,
+   "frequency": 2,
+   "frequencyAmount": 1,
+   "alarmId": null,
+   "id": "a6ccc332-9d67-42f9-816e-e6f302e05fea"
+  },
+  {
+   "title": "second",
+   "description": "",
+   "isCompleted": false,
+   "priority": 0,
+   "createdDate": 1790622587261,
+   "updatedDate": 1790622587261,
+   "subTasks": [],
+   "dueDate": 0,
+   "recurring": false,
+   "frequency": 2,
+   "frequencyAmount": 1,
+   "alarmId": null,
+   "id": "c23a2877-7599-43dd-a07c-13f712e0a736"
+  },
+  {
+   "title": "legacy edited",
+   "description": "",
+   "isCompleted": false,
+   "priority": 0,
+   "createdDate": 0,
+   "updatedDate": 1790622587362,
+   "subTasks": [
+    {
+     "title": "sub",
+     "isCompleted": true,
+     "id": "0f8fad5b-d9cb-469f-a165-70867728950e"
+    },
+    {
+     "title": "中文 sub",
+     "isCompleted": false,
+     "id": "1b4e28ba-2fa1-11d2-883f-0016d3cca427"
+    }
+   ],
+   "dueDate": 0,
+   "recurring": false,
+   "frequency": 2,
+   "frequencyAmount": 1,
+   "alarmId": null,
+   "id": "legacy1"
+  }
+ ],
+ "diary": [
+  {
+   "title": "web diary",
+   "content": "x",
+   "createdDate": 1790622587262,
+   "updatedDate": 1790622587262,
+   "mood": "AWESOME",
+   "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+  }
+ ],
+ "bookmarks": [
+  {
+   "url": "https://a.com",
+   "title": "A",
+   "description": "",
+   "createdDate": 1,
+   "updatedDate": 2,
+   "id": "b1"
+  }
+ ],
+ "deleted": [
+  {
+   "type": "diary",
+   "id": "d-app",
+   "at": 1790622587259
+  },
+  {
+   "type": "notes",
+   "id": "7ae36c45-b4ef-4e71-9d22-8d25ded5e84f",
+   "at": 1790622587270
+  }
+ ]
+}
