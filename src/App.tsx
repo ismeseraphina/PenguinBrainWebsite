@@ -12,6 +12,8 @@ import { SettingsPage } from './pages/Settings';
 import { AdminPage, SyncPage } from './pages/Account';
 import { AssistantPage } from './pages/Assistant';
 import { startReminders } from './events';
+import { startClock } from './clock';
+import { ClockPage, TimerPill } from './pages/Clock';
 
 function Logo() {
   return (
@@ -38,6 +40,7 @@ const SUBNAV = [
   { path: 'diary', label: 'Diary', icon: 'happy' },
   { path: 'bookmarks', label: 'Bookmarks', icon: 'open_link' },
   { path: 'calendar', label: 'Calendar', icon: 'calendar' },
+  { path: 'clock', label: 'Clock', icon: 'alarm' },
   { path: 'assistant', label: 'Assistant', icon: 'send_message' },
 ];
 
@@ -59,7 +62,10 @@ function useTheme() {
 /** Auto sync: on open, on focus, 4s after edits, and every 5 minutes. */
 function useAutoSync(ready: boolean) {
   useEffect(() => {
-    if (ready) startReminders();
+    if (ready) {
+      startReminders();
+      startClock();
+    }
   }, [ready]);
   useEffect(() => {
     if (!ready) return;
@@ -121,6 +127,8 @@ function Page({ route }: { route: string[] }) {
       return <BookmarksPage />;
     case 'calendar':
       return <CalendarPage />;
+    case 'clock':
+      return <ClockPage />;
     case 'assistant':
       return <AssistantPage />;
     case 'admin':
@@ -193,6 +201,7 @@ export default function App() {
       <main className="content">
         <Page route={route} />
       </main>
+      {top !== 'clock' && <TimerPill />}
       <nav className="bottom-nav" aria-label="Main navigation">
         {NAV.map((n) => (
           <button key={n.path} className={mobileNav === n.path ? 'on' : ''} onClick={() => navigate(`/${n.path}`)} aria-current={mobileNav === n.path ? 'page' : undefined}>

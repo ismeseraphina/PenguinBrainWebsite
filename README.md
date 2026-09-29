@@ -1,6 +1,6 @@
 # Penguin Brain Website
 
-The web version of **Penguin Brain**: tasks, notes (with folders), diary with mood chart, bookmarks, a calendar and the AI assistant (OpenAI, Gemini, Anthropic, OpenRouter, LM Studio, Ollama with your own key, same tools as the app), in a pink penguin theme. It signs in with GitHub and syncs both ways with the [Penguin Brain Android app](https://github.com/ismeseraphina/PenguinBrain).
+The web version of **Penguin Brain**: tasks, notes (with folders), diary with mood chart, bookmarks, a calendar, a Clock (focus timer fed by calendar events, task deadlines and routines) and the AI assistant (OpenAI, Gemini, Anthropic, OpenRouter, LM Studio, Ollama with your own key, same tools as the app), in a pink penguin theme. It signs in with GitHub and syncs both ways with the [Penguin Brain Android app](https://github.com/ismeseraphina/PenguinBrain).
 
 **Open it:** Cloudflare version with accounts: https://penguinbrain.acry.workers.dev/ · static GitHub Pages version (GitHub sync only): https://ismeseraphina.github.io/PenguinBrainWebsite/
 

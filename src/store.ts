@@ -12,6 +12,17 @@ export const defaultSettings: Settings = {
   showCompletedTasks: true,
   taskOrder: 'priority',
   noteView: 'grid',
+  clock: {
+    focusLeadMin: 180,
+    focusMinutes: 50,
+    notify: true,
+    routines: [
+      { id: 'r-lunch', name: 'Lunch', time: '12:30', minutes: 50, days: [1, 2, 3, 4, 5, 6, 0], enabled: true },
+      { id: 'r-eyes', name: 'Eye break & walk', time: '16:00', minutes: 10, days: [1, 2, 3, 4, 5], enabled: true },
+      { id: 'r-dinner', name: 'Dinner', time: '19:00', minutes: 50, days: [1, 2, 3, 4, 5, 6, 0], enabled: true },
+      { id: 'r-shutdown', name: 'Evening shutdown', time: '22:30', minutes: 10, days: [1, 2, 3, 4, 5, 6, 0], enabled: true },
+    ],
+  },
   ai: { provider: 'none', keys: {}, models: {}, urls: {}, tools: true },
   sync: { token: '', owner: '', repo: 'PenguinBrainData', login: '', auto: true, lastSync: 0, lastError: '' },
 };

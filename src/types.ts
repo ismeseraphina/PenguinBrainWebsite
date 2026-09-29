@@ -113,7 +113,23 @@ export interface AiSettings {
   tools: boolean;
 }
 
+export interface Routine {
+  id: string;
+  name: string;
+  time: string; // HH:mm local time
+  minutes: number;
+  days: number[]; // 0 = Sunday
+  enabled: boolean;
+}
+export interface ClockSettings {
+  focusLeadMin: number; // how long before a task's due date the focus window opens
+  focusMinutes: number; // suggested focus session length
+  routines: Routine[];
+  notify: boolean;
+}
+
 export interface Settings {
+  clock: ClockSettings;
   ai: AiSettings;
   theme: 'auto' | 'light' | 'dark';
   firstDayOfWeek: 0 | 1; // 0 sunday, 1 monday

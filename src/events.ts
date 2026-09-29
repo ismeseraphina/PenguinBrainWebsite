@@ -113,7 +113,7 @@ function fired(): Record<string, number> {
   }
 }
 
-async function show(title: string, body: string, tag: string) {
+export async function show(title: string, body: string, tag: string) {
   try {
     const reg = await navigator.serviceWorker?.register?.('sw.js');
     if (reg) await reg.showNotification(title, { body, tag, icon: 'img/icon-192.png' });

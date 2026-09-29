@@ -13,6 +13,7 @@ const SPACES = [
   { key: 'diary', title: 'Diary', img: 'img/penguin_diary.webp', tint: 'var(--space-green)' },
   { key: 'bookmarks', title: 'Bookmarks', img: 'img/penguin_bookmarks.webp', tint: 'var(--space-orange)' },
   { key: 'calendar', title: 'Calendar', img: 'img/penguin_calendar.webp', tint: 'var(--space-purple)' },
+  { key: 'clock', title: 'Clock', img: 'img/penguin_clock.webp', tint: 'var(--space-blue)' },
   { key: 'assistant', title: 'Assistant', img: 'img/penguin_assistant.webp', tint: 'var(--primary-strong)' },
 ];
 
@@ -28,6 +29,7 @@ export function SpacesPage() {
     bookmarks: bookmarks.length,
     calendar: tasks.filter((t) => t.dueDate && !t.isCompleted).length,
     assistant: -1,
+    clock: -1,
   };
   const label: Record<string, string> = { notes: 'notes', tasks: 'open', diary: 'entries', bookmarks: 'saved', calendar: 'due' };
   return (
@@ -39,7 +41,7 @@ export function SpacesPage() {
             <img src={s.img} alt="" loading="eager" />
             <span className="space-title">{s.title}</span>
             <span className="space-count">
-              {s.key === 'assistant' ? 'AI chat' : `${counts[s.key as keyof typeof counts]} ${label[s.key]}`}
+              {s.key === 'clock' ? 'Focus timer' : s.key === 'assistant' ? 'AI chat' : `${counts[s.key as keyof typeof counts]} ${label[s.key]}`}
             </span>
           </button>
         ))}
