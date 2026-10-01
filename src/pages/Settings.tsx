@@ -77,6 +77,7 @@ export function SettingsPage() {
         diary: upsertAll(s.diary, data.diary),
         bookmarks: upsertAll(s.bookmarks, data.bookmarks),
         events: upsertAll(s.events, data.events),
+        categories: upsertAll(s.categories, data.categories),
       }));
       toast(`Imported ${data.notes.length} notes, ${data.tasks.length} tasks, ${data.diary.length} diary entries, ${data.bookmarks.length} bookmarks`);
     } catch {

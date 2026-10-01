@@ -69,6 +69,15 @@ export interface CalEvent {
   allDay: boolean;
   rrule: string; // RFC 5545 RRULE without the "RRULE:" prefix, empty = no repeat
   reminders: number[]; // minutes before start
+  category: string; // EventCategory id, empty = none
+  color: string; // #rrggbb copied from the category so the app can show it, empty = calendar colour
+  updatedDate: number;
+  id: string;
+}
+
+export interface EventCategory {
+  name: string;
+  color: string; // #rrggbb
   updatedDate: number;
   id: string;
 }
@@ -90,6 +99,7 @@ export interface SyncFile {
   diary: DiaryEntry[];
   bookmarks: Bookmark[];
   events: CalEvent[];
+  categories: EventCategory[];
   deleted: Tombstone[];
 }
 
@@ -151,6 +161,7 @@ export interface AppData {
   diary: DiaryEntry[];
   bookmarks: Bookmark[];
   events: CalEvent[];
+  categories: EventCategory[];
 }
 
 export interface AppState extends AppData {

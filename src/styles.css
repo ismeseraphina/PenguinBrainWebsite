@@ -2153,3 +2153,86 @@ button.settings-row:hover {
   margin: 8px 0 0;
   font-size: 1rem;
 }
+
+/* ---------- event categories ---------- */
+.cat-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.cat-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.cat-chip i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: none;
+}
+.cat-chip.off {
+  opacity: 0.45;
+}
+.cat-chip.off i {
+  background: transparent !important;
+  border: 2px solid var(--text-muted);
+}
+.cat-chip.sel {
+  border-color: var(--text);
+  background: var(--card-2);
+}
+.cat-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px 10px;
+  align-items: center;
+}
+.cat-row .swatches {
+  grid-column: 2 / 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.color-dot {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.12);
+}
+.color-dot input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  padding: 0;
+}
+.swatch.on {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text);
+}
+.link-btn {
+  color: var(--primary-strong);
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 0;
+}

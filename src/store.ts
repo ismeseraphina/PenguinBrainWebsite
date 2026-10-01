@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import type { AppState, Bookmark, CalEvent, DiaryEntry, Note, NoteFolder, Settings, Task } from './types';
+import type { AppState, Bookmark, CalEvent, EventCategory, DiaryEntry, Note, NoteFolder, Settings, Task } from './types';
 import { now, uuid } from './util';
 
 const DB_NAME = 'penguinbrain';
@@ -34,6 +34,14 @@ const emptyState: AppState = {
   diary: [],
   bookmarks: [],
   events: [],
+  // fixed ids so every device seeds the same defaults without duplicates
+  categories: [
+    { name: 'Class', color: '#6f4cad', updatedDate: 1, id: 'cat-class' },
+    { name: 'Study', color: '#2965c9', updatedDate: 1, id: 'cat-study' },
+    { name: 'Work', color: '#e78a00', updatedDate: 1, id: 'cat-work' },
+    { name: 'Personal', color: '#1e9651', updatedDate: 1, id: 'cat-personal' },
+    { name: 'Social', color: '#d6336c', updatedDate: 1, id: 'cat-social' },
+  ],
   settings: defaultSettings,
   syncBase: { account: '', ids: {} },
 };
@@ -215,6 +223,21 @@ export const actions = {
   },
   deleteEvent(id: string) {
     setState((s) => ({ ...s, events: s.events.filter((x) => x.id !== id) }));
+  },
+  upsertCategory(c: EventCategory) {
+    // keep the colour on every event of this category so the Android app shows it too
+    setState((s) => ({
+      ...s,
+      categories: upsert(s.categories, c),
+      events: s.events.map((e) => (e.category === c.id && e.color !== c.color ? { ...e, color: c.color, updatedDate: now() } : e)),
+    }));
+  },
+  deleteCategory(id: string) {
+    setState((s) => ({
+      ...s,
+      categories: s.categories.filter((c) => c.id !== id),
+      events: s.events.map((e) => (e.category === id ? { ...e, category: '', color: '', updatedDate: now() } : e)),
+    }));
   },
   // settings
   updateSettings(patch: Partial<Settings>) {

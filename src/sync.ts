@@ -3,14 +3,14 @@
 // one JSON file (penguinbrain-sync.json) in the user's private GitHub repo,
 // per-item last-writer-wins on updatedDate, tombstones for deletions.
 
-import type { AppData, AppState, Bookmark, CalEvent, DiaryEntry, Mood, Note, NoteFolder, SubTask, SyncFile, Task, Tombstone } from './types';
+import type { AppData, AppState, Bookmark, CalEvent, EventCategory, DiaryEntry, Mood, Note, NoteFolder, SubTask, SyncFile, Task, Tombstone } from './types';
 import { getState, setState } from './store';
 import { uuid } from './util';
 
 export const SYNC_FILE_PATH = 'penguinbrain-sync.json';
 const FORMAT = 'penguinbrain-sync';
 const TOMBSTONE_TTL = 180 * 24 * 60 * 60 * 1000;
-const TYPES = ['notes', 'noteFolders', 'tasks', 'diary', 'bookmarks', 'events'] as const;
+const TYPES = ['notes', 'noteFolders', 'tasks', 'diary', 'bookmarks', 'events', 'categories'] as const;
 type TypeKey = (typeof TYPES)[number];
 
 export class SyncError extends Error {}
@@ -87,6 +87,13 @@ export function normBookmark(r: Raw): Bookmark {
   };
 }
 
+const hex = (v: unknown) => {
+  const s = str(v).trim().toLowerCase();
+  return /^#[0-9a-f]{6}$/.test(s) ? s : '';
+};
+export function normCategory(r: Raw): EventCategory {
+  return { name: str(r.name), color: hex(r.color) || '#d6336c', updatedDate: num(r.updatedDate), id: str(r.id) };
+}
 export function normEvent(r: Raw): CalEvent {
   const start = num(r.start);
   return {
@@ -98,6 +105,8 @@ export function normEvent(r: Raw): CalEvent {
     allDay: bool(r.allDay),
     rrule: str(r.rrule),
     reminders: Array.isArray(r.reminders) ? (r.reminders as unknown[]).map((x) => num(x)).filter((x) => x >= 0) : [],
+    category: str(r.category),
+    color: hex(r.color),
     updatedDate: num(r.updatedDate),
     id: str(r.id),
   };
@@ -124,6 +133,7 @@ export function parseData(raw: Raw): AppData & { deleted: Tombstone[] } {
     diary: list('diary').map(normEntry).map(fix),
     bookmarks: list('bookmarks').map(normBookmark).map(fix),
     events: list('events').map(normEvent).filter((e) => e.id && e.start > 0),
+    categories: list('categories').map(normCategory).filter((c) => c.id),
     deleted: list('deleted').map((t) => ({ type: str(t.type), id: str(t.id), at: num(t.at) })),
   };
 }
@@ -136,6 +146,7 @@ const NORM: Record<string, (r: Raw) => unknown> = {
   diary: normEntry as (r: Raw) => unknown,
   bookmarks: normBookmark as (r: Raw) => unknown,
   events: normEvent as (r: Raw) => unknown,
+  categories: normCategory as (r: Raw) => unknown,
 };
 const cn = (k: string, x: unknown) => canon(NORM[k](x as Raw));
 
@@ -322,6 +333,7 @@ async function syncOnce(): Promise<SyncResult> {
     diary: merge('diary', snapshot.diary, remote.diary, (x) => x.updatedDate, base('diary'), tombs, t),
     bookmarks: merge('bookmarks', snapshot.bookmarks, remote.bookmarks, (x) => x.updatedDate, base('bookmarks'), tombs, t),
     events: merge('events', snapshot.events ?? [], remote.events, (x) => x.updatedDate, base('events'), tombs, t),
+    categories: merge('categories', snapshot.categories ?? [], remote.categories, (x) => x.updatedDate, base('categories'), tombs, t),
   };
 
   const deleted: Tombstone[] = [...tombs.entries()]
@@ -343,6 +355,7 @@ async function syncOnce(): Promise<SyncResult> {
     diary: merged.diary.map((x) => normEntry(x as unknown as Raw)),
     bookmarks: merged.bookmarks.map((x) => normBookmark(x as unknown as Raw)),
     events: merged.events.map((x) => normEvent(x as unknown as Raw)),
+    categories: merged.categories.map((x) => normCategory(x as unknown as Raw)),
     deleted,
   };
 
@@ -404,6 +417,7 @@ export function exportBackup(s: AppState): string {
     diary: s.diary,
     bookmarks: s.bookmarks,
     events: s.events,
+    categories: s.categories,
     deleted: [],
   };
   return JSON.stringify(file);
