@@ -47,6 +47,10 @@ Penguin Brain is Seraphina's personal remix. It is free and not sold.
 
 Because this code comes from a GPL-3.0 project, the requests above about commercial use are Seraphina's personal request and cannot add extra legal limits to the GPL code. The credit and source rules above are required by the license. Questions or permission requests: [ismeseraphina.com](https://ismeseraphina.com).
 
+### Penguin artwork
+
+The penguin pictures (app icon, space cards, Clock penguin and the other `penguin_*` images) were made by Seraphina with AI image tools. They are **not** part of the GPL-3.0 code license. All rights reserved to the extent the law allows: please do not reuse, sell or redistribute them, or use them in another app, without Seraphina's permission. If you fork this project, replace the penguin images with your own. (Hong Kong's Copyright Ordinance protects computer-generated works; rules differ in other countries.)
+
 ## Sign in & Sync
 
 Sync stores one file, `penguinbrain-sync.json`, in a **private** GitHub repository you own. No other server is involved.
