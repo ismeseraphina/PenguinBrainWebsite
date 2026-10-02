@@ -42,8 +42,62 @@ function build(e: CalEvent, y: number, m: number, day: number) {
   return e.allDay ? Date.UTC(y, m, day) : new Date(y, m, day, s.getHours(), s.getMinutes(), s.getSeconds()).getTime();
 }
 
+
+const p2 = (n: number) => String(n).padStart(2, '0');
+
+/** Split a rule into the repeat pattern and its UNTIL date (YYYY-MM-DD, local for timed events). */
+export function splitUntil(rrule: string, allDay: boolean): { base: string; until: string } {
+  const parts = rrule.replace(/^RRULE:/i, '').split(';').filter(Boolean);
+  const u = parts.find((x) => /^UNTIL=/i.test(x));
+  const base = parts.filter((x) => !/^UNTIL=/i.test(x)).join(';');
+  if (!u) return { base, until: '' };
+  const t = parseUntil(u.slice(6));
+  if (!t) return { base, until: '' };
+  const d = new Date(t);
+  const until = allDay || !/T/i.test(u) ? `${d.getUTCFullYear()}-${p2(d.getUTCMonth() + 1)}-${p2(d.getUTCDate())}` : `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+  return { base, until };
+}
+
+/** Add UNTIL (inclusive last day, YYYY-MM-DD) to a repeat pattern. Timed events use the end of that local day in UTC. */
+export function withUntil(base: string, until: string, allDay: boolean) {
+  if (!base) return '';
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(until);
+  if (!m) return base;
+  let v: string;
+  if (allDay) v = `${m[1]}${m[2]}${m[3]}`;
+  else {
+    const d = new Date(+m[1], +m[2] - 1, +m[3], 23, 59, 59);
+    v = `${d.getUTCFullYear()}${p2(d.getUTCMonth() + 1)}${p2(d.getUTCDate())}T${p2(d.getUTCHours())}${p2(d.getUTCMinutes())}${p2(d.getUTCSeconds())}Z`;
+  }
+  return `${base};UNTIL=${v}`;
+}
+
+/**
+ * A repeating event whose end is days after its start was almost always meant as
+ * "every week from the start date until the end date". Turn it into one-occurrence
+ * length + UNTIL. Returns null when nothing needs fixing.
+ */
+export function fixRepeatSpan(e: CalEvent): CalEvent | null {
+  if (!e.rrule || !parseRule(e.rrule).freq) return null;
+  const span = e.end - e.start;
+  if (e.allDay ? span <= DAY : span < DAY) return null;
+  const { base, until } = splitUntil(e.rrule, e.allDay);
+  if (e.allDay) {
+    const last = new Date(e.end - DAY);
+    const u = until || `${last.getUTCFullYear()}-${p2(last.getUTCMonth() + 1)}-${p2(last.getUTCDate())}`;
+    return { ...e, end: e.start + DAY, rrule: withUntil(base, u, true) };
+  }
+  const s = new Date(e.start);
+  const en = new Date(e.end);
+  let end = new Date(s.getFullYear(), s.getMonth(), s.getDate(), en.getHours(), en.getMinutes(), en.getSeconds()).getTime();
+  if (end <= e.start) end = e.start + 3600000;
+  const u = until || `${en.getFullYear()}-${p2(en.getMonth() + 1)}-${p2(en.getDate())}`;
+  return { ...e, end, rrule: withUntil(base, u, false) };
+}
+
 /** Occurrences overlapping [from, to). */
 export function occurrences(e: CalEvent, from: number, to: number): Occurrence[] {
+  e = fixRepeatSpan(e) ?? e;
   const len = Math.max(0, e.end - e.start);
   const r = e.rrule ? parseRule(e.rrule) : null;
   if (!r || !r.freq) return e.start < to && e.start + Math.max(len, 1) > from ? [{ event: e, start: e.start, end: e.end }] : [];

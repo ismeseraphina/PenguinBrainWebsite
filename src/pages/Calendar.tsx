@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { actions, useStore } from '../store';
 import type { CalEvent, EventCategory } from '../types';
 import { Confirm, Empty, IconButton, Modal, Switch, TopBar, navigate } from '../ui';
-import { notificationsSupported, onDay, parseRule, type Occurrence } from '../events';
+import { fixRepeatSpan, notificationsSupported, onDay, parseRule, splitUntil, withUntil, type Occurrence } from '../events';
 import { now, uuid } from '../util';
 import { formatDate, isSameDay, startOfDay } from '../util';
 import { AddTaskModal, TaskRow } from './Tasks';
@@ -31,6 +31,13 @@ export function CalendarPage() {
   };
   const events = useMemo(() => allEvents.filter((e) => !hidden.includes(e.category || '')), [allEvents, hidden]);
   const [editing, setEditing] = useState<CalEvent | null>(null);
+  // Repair old repeating events saved as "start day → semester end day" (shown every day before).
+  useEffect(() => {
+    for (const ev of allEvents) {
+      const fixed = fixRepeatSpan(ev);
+      if (fixed) actions.upsertEvent({ ...fixed, updatedDate: now() });
+    }
+  }, [allEvents]);
   const [perm, setPerm] = useState(() => (notificationsSupported() ? Notification.permission : 'denied'));
 
   const cells = useMemo(() => {
@@ -188,7 +195,7 @@ function EventRow({ o, cat, onClick }: { o: Occurrence; cat?: EventCategory; onC
           {cat ? `${cat.name} · ` : ''}
           {e.allDay ? 'All day' : `${time(o.start)} – ${time(o.end)}`}
           {e.location ? ` · ${e.location}` : ''}
-          {e.rrule ? ' · repeats' : ''}
+          {e.rrule ? ` · repeats${splitUntil(e.rrule, e.allDay).until ? ` until ${splitUntil(e.rrule, e.allDay).until}` : ''}` : ''}
           {e.reminders.length ? ' · reminder' : ''}
         </p>
       </div>
@@ -223,7 +230,9 @@ function EventModal({ event, onClose, onManage }: { event: CalEvent; onClose: ()
   const [end, setEnd] = useState(event.allDay ? toUtcDateInput(Math.max(event.start, event.end - DAY)) : toLocalInput(event.end));
   const [location, setLocation] = useState(event.location);
   const [description, setDescription] = useState(event.description);
-  const [rrule, setRrule] = useState(event.rrule);
+  const split0 = splitUntil(event.rrule, event.allDay);
+  const [rrule, setRrule] = useState(split0.base);
+  const [until, setUntil] = useState(split0.until);
   const [reminder, setReminder] = useState(event.reminders.length ? event.reminders[0] : -1);
   const [confirm, setConfirm] = useState(false);
   const [error, setError] = useState('');
@@ -248,10 +257,18 @@ function EventModal({ event, onClose, onManage }: { event: CalEvent; onClose: ()
     let e = allDay ? fromDateInput(end) + DAY : fromLocalInput(end);
     if (!s) return setError('Choose a start date');
     if (!e || e <= s) e = allDay ? s + DAY : s + 3600000;
+    let rule = withUntil(rrule, until, allDay);
+    if (rrule) {
+      // "Ends" on a later day with a repeat means "repeat until that day"
+      const fixed = fixRepeatSpan({ ...event, start: s, end: e, allDay, rrule: rule });
+      if (fixed) { e = fixed.end; rule = fixed.rrule; }
+      const u = splitUntil(rule, allDay).until;
+      if (u && (allDay ? fromDateInput(u) + DAY : fromLocalInput(`${u}T23:59`)) < s) return setError('Repeat until must be after the start');
+    }
     const extra = reminder >= 0 ? [reminder] : [];
     const reminders = reminder === (event.reminders[0] ?? -1) ? event.reminders : extra;
     const cat = categories.find((c) => c.id === category);
-    actions.upsertEvent({ ...event, category: cat ? cat.id : '', color: cat ? cat.color : '', title: title.trim(), description, location: location.trim(), start: s, end: e, allDay, rrule, reminders, updatedDate: now(), id: event.id || uuid() });
+    actions.upsertEvent({ ...event, category: cat ? cat.id : '', color: cat ? cat.color : '', title: title.trim(), description, location: location.trim(), start: s, end: e, allDay, rrule: rule, reminders, updatedDate: now(), id: event.id || uuid() });
     onClose();
   };
 
@@ -306,6 +323,16 @@ function EventModal({ event, onClose, onManage }: { event: CalEvent; onClose: ()
             ))}
           </select>
         </label>
+        {rrule && (
+          <label className="field">
+            <span className="field-label">Repeat until (last day, optional)</span>
+            <div className="row" style={{ gap: 8 }}>
+              <input className="input" type="date" value={until} min={start.slice(0, 10)} onChange={(e) => setUntil(e.target.value)} />
+              {until && <button type="button" className="link-btn" onClick={() => setUntil('')}>Clear</button>}
+            </div>
+            <span className="muted small">e.g. semester ends 28 Nov: pick 2026-11-28. Leave empty to repeat forever.</span>
+          </label>
+        )}
         <label className="field">
           <span className="field-label">Reminder</span>
           <select className="input" value={reminder} onChange={(e) => setReminder(Number(e.target.value))}>

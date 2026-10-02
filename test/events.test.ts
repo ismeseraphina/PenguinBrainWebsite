@@ -19,3 +19,16 @@ if (occurrences({ ...e, rrule: 'FREQ=DAILY;INTERVAL=2' }, start, start + 7 * 864
 const n = normEvent({ id: 'x', start: 5, end: 2, reminders: [10, '5'] } as never);
 if (n.end !== 5 || n.reminders.join() !== '10,5' || n.rrule !== '') fail('norm');
 console.log('EVENTS PASSED');
+
+// Weekly event saved as start day → semester end day must not show every day
+{
+  const { fixRepeatSpan, occurrences: occ, splitUntil: su } = await import('../src/events');
+  const ev = { title: 'CS2311', description: '', location: '', start: new Date(2026, 8, 1, 10, 0).getTime(), end: new Date(2026, 10, 28, 11, 0).getTime(), allDay: false, rrule: 'FREQ=WEEKLY', reminders: [], category: '', color: '', updatedDate: 1, id: 'w' };
+  const f = fixRepeatSpan(ev as any)!;
+  if (f.end - f.start !== 3600000) throw new Error('span not fixed');
+  if (su(f.rrule, false).until !== '2026-11-28') throw new Error('until wrong ' + f.rrule);
+  const list = occ(ev as any, new Date(2026, 8, 1).getTime(), new Date(2027, 0, 1).getTime());
+  if (list.length !== 13) throw new Error('expected 13 weekly occurrences, got ' + list.length);
+  if (new Date(list[12].start).getDate() !== 24) throw new Error('last should be 24 Nov');
+  console.log('weekly until semester end: ok');
+}
